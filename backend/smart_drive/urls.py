@@ -36,11 +36,11 @@ urlpatterns = [
     path('api/user/emergency-contacts/', EmergencyContactViewSet.as_view({'get': 'list', 'post': 'create'}), name='user-contacts-list'),
     path('api/user/emergency-contacts/<int:pk>/', EmergencyContactViewSet.as_view({'get': 'retrieve', 'put': 'update', 'delete': 'destroy'}), name='user-contacts-detail'),
 
-    path('api/user/trips/', TripViewSet.as_view({'get': 'list'}), name='user-trips-list'),
-    path('api/user/trips/<int:pk>/', TripViewSet.as_view({'get': 'retrieve'}), name='user-trips-detail'),
+    path('api/user/trips/', TripViewSet.as_view({'get': 'list', 'post': 'create'}), name='user-trips-list'),
+    path('api/user/trips/<int:pk>/', TripViewSet.as_view({'get': 'retrieve', 'put': 'update', 'patch': 'partial_update', 'delete': 'destroy'}), name='user-trips-detail'),
 
-    path('api/user/alerts/', UserAlertViewSet.as_view({'get': 'list'}), name='user-alerts-list'),
-    path('api/user/alerts/<int:pk>/', UserAlertViewSet.as_view({'get': 'retrieve'}), name='user-alerts-detail'),
+    path('api/user/alerts/', UserAlertViewSet.as_view({'get': 'list', 'post': 'create'}), name='user-alerts-list'),
+    path('api/user/alerts/<int:pk>/', UserAlertViewSet.as_view({'get': 'retrieve', 'put': 'update', 'patch': 'partial_update', 'delete': 'destroy'}), name='user-alerts-detail'),
 
     path('api/admin/dashboard/', OverviewView.as_view(), name='admin-dashboard'),
 

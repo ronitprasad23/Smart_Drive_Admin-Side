@@ -18,6 +18,12 @@ class Trip(models.Model):
     end_location = models.CharField(max_length=255, blank=True)
     distance_km = models.FloatField(default=0.0)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='ONGOING')
+    
+    # Feedback Fields
+    rating = models.IntegerField(null=True, blank=True)
+    feedback = models.TextField(null=True, blank=True)
+    alert_helpful = models.BooleanField(null=True, blank=True)
+    
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

@@ -10,7 +10,12 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('id', 'username', 'email', 'first_name', 'last_name', 'is_staff', 'date_joined', 'is_active', 'password')
+        fields = (
+            'id', 'username', 'email', 'first_name', 'last_name', 
+            'full_name', 'license_number', 'dob', 'issue_date', 'license_type', 'persona', 
+            'mobile_number', 'emergency_contact', 'profile_image', 'is_staff', 
+            'date_joined', 'is_active', 'password'
+        )
         read_only_fields = ('id', 'date_joined')
 
     def create(self, validated_data):
@@ -31,11 +36,16 @@ class UserSerializer(serializers.ModelSerializer):
         return instance
 
 class RegisterSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(write_only=True)
+    password = serializers.CharField(write_only=True, min_length=6)
 
     class Meta:
         model = User
         fields = ('username', 'email', 'password', 'first_name', 'last_name')
+
+    def validate_email(self, value):
+        if User.objects.filter(email=value).exists():
+            raise serializers.ValidationError("A user with this email already exists.")
+        return value
 
     def create(self, validated_data):
         user = User.objects.create_user(

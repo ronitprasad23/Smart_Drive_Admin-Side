@@ -3,6 +3,16 @@ from django.contrib.auth.models import AbstractUser
 
 class User(AbstractUser):
     admin_id = models.AutoField(primary_key=True)
+    full_name = models.CharField(max_length=150, blank=True)
+    license_number = models.CharField(max_length=50, blank=True)
+    dob = models.DateField(null=True, blank=True)
+    persona = models.CharField(max_length=20, default='Normal')
+    mobile_number = models.CharField(max_length=20, blank=True)
+    emergency_contact = models.CharField(max_length=20, blank=True)
+    profile_image = models.TextField(blank=True, null=True)
+    issue_date = models.DateField(null=True, blank=True)
+    license_type = models.CharField(max_length=20, blank=True)
+    
     class Meta:
         db_table = 'admins'
     pass
