@@ -3,11 +3,11 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-from django.contrib.auth import get_user_model
-from .models import EmergencyContact
-from .serializers import UserSerializer, RegisterSerializer, EmergencyContactSerializer
-
-User = get_user_model()
+from .models import EmergencyContact, AdminUser, User
+from .serializers import (
+    UserSerializer, AdminUserSerializer, 
+    RegisterSerializer, EmergencyContactSerializer
+)
 
 class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
@@ -18,12 +18,12 @@ class AdminTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod
     def get_token(cls, user):
         token = super().get_token(user)
-        token['is_admin'] = user.is_staff
+        token['is_admin'] = getattr(user, 'is_staff', False)
         return token
 
     def validate(self, attrs):
         data = super().validate(attrs)
-        if not self.user.is_staff:
+        if not getattr(self.user, 'is_staff', False):
              raise serializers.ValidationError("User is not an admin.")
         return data
 
@@ -31,21 +31,41 @@ class AdminLoginView(APIView):
     permission_classes = (permissions.AllowAny,)
 
     def post(self, request):
-        serializer = TokenObtainPairSerializer(data=request.data)
-        try:
-            serializer.is_valid(raise_exception=True)
-        except Exception as e:
-            return Response(str(e), status=status.HTTP_400_BAD_REQUEST)
-
-        user = serializer.user
-        if not user.is_staff:
-            return Response({"detail": "Not authorized."}, status=status.HTTP_403_FORBIDDEN)
-
-        return Response(serializer.validated_data, status=status.HTTP_200_OK)
+        # We manually authenticate here to ensure we check the AdminUser table
+        username = request.data.get('username')
+        password = request.data.get('password')
+        
+        from django.contrib.auth import authenticate
+        user = authenticate(username=username, password=password)
+        
+        if user is not None and isinstance(user, AdminUser):
+            from rest_framework_simplejwt.tokens import RefreshToken
+            refresh = RefreshToken.for_user(user)
+            return Response({
+                'refresh': str(refresh),
+                'access': str(refresh.access_token),
+                'is_admin': True
+            }, status=status.HTTP_200_OK)
+        
+        # Fallback to checking regular User if it's a staff member
+        if user is not None and isinstance(user, User) and user.is_staff:
+            from rest_framework_simplejwt.tokens import RefreshToken
+            refresh = RefreshToken.for_user(user)
+            return Response({
+                'refresh': str(refresh),
+                'access': str(refresh.access_token),
+                'is_admin': True
+            }, status=status.HTTP_200_OK)
+        
+        return Response({"detail": "Invalid admin credentials."}, status=status.HTTP_401_UNAUTHORIZED)
 
 class UserProfileView(generics.RetrieveUpdateAPIView):
-    serializer_class = UserSerializer
     permission_classes = (permissions.IsAuthenticated,)
+
+    def get_serializer_class(self):
+        if isinstance(self.request.user, AdminUser):
+            return AdminUserSerializer
+        return UserSerializer
 
     def get_object(self):
         return self.request.user
@@ -61,13 +81,37 @@ class EmergencyContactViewSet(viewsets.ModelViewSet):
         serializer.save(user=self.request.user)
 
 class AdminUserViewSet(viewsets.ModelViewSet):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
+    queryset = AdminUser.objects.all()
+    serializer_class = AdminUserSerializer
     permission_classes = (permissions.IsAdminUser,)
+
+    def get_queryset(self):
+        # We still return AdminUser as default for other actions
+        return AdminUser.objects.all()
+
+    def list(self, request, *args, **kwargs):
+        # Return both Admins and Regular Users
+        admins = AdminUser.objects.all()
+        users = User.objects.all()
+        
+        admin_serializer = AdminUserSerializer(admins, many=True)
+        user_serializer = UserSerializer(users, many=True)
+        
+        return Response(admin_serializer.data + user_serializer.data)
+
+    def get_object(self):
+        pk = self.kwargs.get('pk')
+        try:
+            return AdminUser.objects.get(pk=pk)
+        except AdminUser.DoesNotExist:
+            return User.objects.get(pk=pk)
+
+    def create(self, request, *args, **kwargs):
+        return Response({"detail": "Manual user creation is disabled. Users must register via the application."}, 
+                        status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
     def perform_destroy(self, instance):
         try:
-
             from django.contrib.admin.models import LogEntry
             from django.contrib.contenttypes.models import ContentType
 

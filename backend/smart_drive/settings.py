@@ -103,7 +103,7 @@ REST_FRAMEWORK = {
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
-    'USER_ID_FIELD': 'admin_id',
+    'USER_ID_FIELD': 'id',
 }
 
 CORS_ALLOW_ALL_ORIGINS = True
@@ -116,7 +116,7 @@ SPECTACULAR_SETTINGS = {
 }
 
 AUTHENTICATION_BACKENDS = [
-    'accounts.backends.EmailOrUsernameModelBackend',
+    'accounts.backends.MultiTableAuthenticationBackend',
     'django.contrib.auth.backends.ModelBackend',
 ]
 

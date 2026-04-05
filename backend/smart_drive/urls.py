@@ -30,7 +30,7 @@ urlpatterns = [
     path('api/user/vehicles/', VehicleViewSet.as_view({'get': 'list', 'post': 'create'}), name='user-vehicles-list'),
     path('api/user/vehicles/<int:pk>/', VehicleViewSet.as_view({'get': 'retrieve', 'put': 'update', 'patch': 'partial_update', 'delete': 'destroy'}), name='user-vehicles-detail'),
 
-    path('api/admin/vehicles/', AdminVehicleViewSet.as_view({'get': 'list', 'post': 'create'}), name='admin-vehicles-list'),
+    path('api/admin/vehicles/', AdminVehicleViewSet.as_view({'get': 'list'}), name='admin-vehicles-list'),
     path('api/admin/vehicles/<int:pk>/', AdminVehicleViewSet.as_view({'get': 'retrieve', 'put': 'update', 'patch': 'partial_update', 'delete': 'destroy'}), name='admin-vehicles-detail'),
 
     path('api/user/emergency-contacts/', EmergencyContactViewSet.as_view({'get': 'list', 'post': 'create'}), name='user-contacts-list'),
@@ -44,15 +44,15 @@ urlpatterns = [
 
     path('api/admin/dashboard/', OverviewView.as_view(), name='admin-dashboard'),
 
-    path('api/admin/trips/', AdminTripViewSet.as_view({'get': 'list', 'post': 'create'}), name='admin-trips-list'),
+    path('api/admin/trips/', AdminTripViewSet.as_view({'get': 'list'}), name='admin-trips-list'),
     path('api/admin/trips/<int:pk>/', AdminTripViewSet.as_view({'get': 'retrieve', 'put': 'update', 'patch': 'partial_update', 'delete': 'destroy'}), name='admin-trips-detail'),
 
-    path('api/admin/users/', AdminUserViewSet.as_view({'get': 'list', 'post': 'create'}), name='admin-users-list'),
+    path('api/admin/users/', AdminUserViewSet.as_view({'get': 'list'}), name='admin-users-list'),
     path('api/admin/users/<int:pk>/', AdminUserViewSet.as_view({'get': 'retrieve', 'put': 'update', 'patch': 'partial_update', 'delete': 'destroy'}), name='admin-users-detail'),
     path('api/admin/users/<int:pk>/status/', AdminUserViewSet.as_view({'patch': 'partial_update'}), name='admin-users-status'),
 
-    path('api/admin/alerts/', AdminAlertViewSet.as_view({'get': 'list', 'post': 'create'}), name='admin-alerts-list'),
-    path('api/admin/alert-types/', AdminAlertDefinitionViewSet.as_view({'get': 'list', 'post': 'create'}), name='admin-alert-types-list'),
+    path('api/admin/alerts/', AdminAlertViewSet.as_view({'get': 'list'}), name='admin-alerts-list'),
+    path('api/admin/alert-types/', AdminAlertDefinitionViewSet.as_view({'get': 'list'}), name='admin-alert-types-list'),
     path('api/admin/alert-types/<int:pk>/', AdminAlertDefinitionViewSet.as_view({'get': 'retrieve', 'put': 'update', 'delete': 'destroy'}), name='admin-alert-types-detail'),
 
     path('api/admin/system-settings/', SystemSettingViewSet.as_view({'get': 'list', 'post': 'create'}), name='admin-settings-list'),
