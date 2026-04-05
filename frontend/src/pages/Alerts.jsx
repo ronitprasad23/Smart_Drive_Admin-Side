@@ -21,31 +21,9 @@ export default function Alerts() {
     resolved: 0
   });
 
-  // Modal & Form State
-  const [showModal, setShowModal] = useState(false);
-  const [users, setUsers] = useState([]);
-  const [trips, setTrips] = useState([]);
-  const [loadingUsers, setLoadingUsers] = useState(false);
-  const [createLoading, setCreateLoading] = useState(false);
-
-  const [newAlert, setNewAlert] = useState({
-    user_id: '',
-    trip_id: '',
-    alert_type: '',
-    severity: 'MODERATE_RISK',
-    vehicle_speed: '',
-    location: '',
-    latitude: '',
-    longitude: '',
-    is_resolved: false,
-  });
-
   useEffect(() => {
     fetchAlerts();
     fetchAlertTypes();
-    fetchAlertTypes();
-    fetchUsers();
-    fetchTrips();
   }, []);
 
   const fetchAlerts = async () => {
@@ -70,71 +48,6 @@ export default function Alerts() {
     }
   };
 
-  const fetchUsers = async () => {
-    setLoadingUsers(true);
-    try {
-      const response = await api.get('/admin/users/');
-      setUsers(response.data);
-    } catch (error) {
-      console.error("Failed to fetch users", error);
-    } finally {
-      setLoadingUsers(false);
-    }
-  };
-
-  const fetchTrips = async () => {
-    try {
-      const response = await api.get('/admin/trips/');
-      setTrips(response.data);
-    } catch (error) {
-      console.error("Failed to fetch trips", error);
-    }
-  };
-
-  const handleCreateAlert = async (e) => {
-    e.preventDefault();
-    setCreateLoading(true);
-
-    try {
-      // Validate
-      if (!newAlert.user_id || !newAlert.alert_type) {
-        alert("Please select a user and alert type");
-        return;
-      }
-
-      const payload = {
-        ...newAlert,
-        user: newAlert.user_id,
-        trip: newAlert.trip_id || null,
-        latitude: newAlert.latitude || null,
-        longitude: newAlert.longitude || null,
-      };
-
-      await api.post('/admin/alerts/', payload);
-
-      // Reset and refresh
-      setShowModal(false);
-      setNewAlert({
-        user_id: '',
-        trip_id: '',
-        alert_type: '',
-        severity: 'MODERATE_RISK',
-        vehicle_speed: '',
-        location: '',
-        latitude: '',
-        longitude: '',
-        is_resolved: false,
-      });
-      fetchAlerts();
-      alert("Alert created successfully!");
-    } catch (error) {
-      console.error("Failed to create alert", error);
-      alert("Failed to create alert. Please check console for details.");
-    } finally {
-      setCreateLoading(false);
-    }
-  };
-
   const calculateStats = (data) => {
     const total = data.length;
     // Check both display name (from new serializer) and raw value (for backward compatibility/safety)
@@ -150,14 +63,6 @@ export default function Alerts() {
     <>
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-bold text-gray-800">Alerts Management 🚨</h2>
-        {activeTab === 'generated' && (
-          <button
-            onClick={() => setShowModal(true)}
-            className="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-lg shadow-md transition-all flex items-center gap-2 transform hover:scale-105 active:scale-95"
-          >
-            <span className="text-lg">+</span> Add Alert
-          </button>
-        )}
       </div>
 
       <div className="stats-grid">
@@ -359,172 +264,6 @@ export default function Alerts() {
           </>
         )}
       </div>
-
-      {/* Add Alert Modal */}
-      {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl shadow-2xl w-full max-w-md overflow-hidden transform transition-all scale-100">
-            <div className="bg-indigo-600 px-6 py-4 flex justify-between items-center">
-              <h3 className="text-white text-lg font-bold">Add New Alert</h3>
-              <button
-                onClick={() => setShowModal(false)}
-                className="text-white hover:text-gray-200 transition-colors text-xl font-bold"
-              >
-                &times;
-              </button>
-            </div>
-
-            <form onSubmit={handleCreateAlert} className="p-6 space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">User</label>
-                <select
-                  value={newAlert.user_id}
-                  onChange={(e) => setNewAlert({ ...newAlert, user_id: e.target.value })}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all"
-                  required
-                >
-                  <option value="">Select User</option>
-                  {users.map(user => (
-                    <option key={user.id} value={user.id}>{user.username} ({user.email})</option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Trip</label>
-                <select
-                  value={newAlert.trip_id}
-                  onChange={(e) => setNewAlert({ ...newAlert, trip_id: e.target.value })}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all disabled:bg-gray-100 disabled:cursor-not-allowed"
-                  disabled={!newAlert.user_id}
-                >
-                  <option value="">Select Trip</option>
-                  {trips.filter(t => String(t.user) === String(newAlert.user_id)).length > 0 ? (
-                    trips
-                      .filter(t => String(t.user) === String(newAlert.user_id))
-                      .map(trip => (
-                        <option key={trip.id} value={trip.id}>
-                          {trip.start_location} ➝ {trip.end_location} ({new Date(trip.start_time).toLocaleDateString()})
-                        </option>
-                      ))
-                  ) : (
-                    <option value="" disabled>No trips available for this user</option>
-                  )}
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Alert Type</label>
-                <select
-                  value={newAlert.alert_type}
-                  onChange={(e) => setNewAlert({ ...newAlert, alert_type: e.target.value })}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all disabled:bg-gray-100 disabled:cursor-not-allowed"
-                  required
-                  disabled={!newAlert.user_id}
-                >
-                  <option value="">Select Type</option>
-                  {alertTypes.map(type => (
-                    <option key={type.id} value={type.name}>{type.name}</option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Severity</label>
-                <select
-                  value={newAlert.severity}
-                  onChange={(e) => setNewAlert({ ...newAlert, severity: e.target.value })}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all disabled:bg-gray-100 disabled:cursor-not-allowed"
-                  disabled={!newAlert.user_id}
-                >
-                  <option value="MINOR_RISK">Minor Risk</option>
-                  <option value="MODERATE_RISK">Moderate Risk</option>
-                  <option value="CRITICAL_RISK">Critical Risk</option>
-                </select>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Speed (km/h)</label>
-                  <input
-                    type="number"
-                    value={newAlert.vehicle_speed}
-                    onChange={(e) => setNewAlert({ ...newAlert, vehicle_speed: e.target.value })}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all"
-                    placeholder="0"
-                  />
-                  <p className="text-xs text-gray-500 mt-1">Speed in km/h</p>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Location</label>
-                  <input
-                    type="text"
-                    value={newAlert.location}
-                    onChange={(e) => setNewAlert({ ...newAlert, location: e.target.value })}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all"
-                    placeholder="e.g. Hive"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Latitude</label>
-                  <input
-                    type="number"
-                    step="any"
-                    value={newAlert.latitude}
-                    onChange={(e) => setNewAlert({ ...newAlert, latitude: e.target.value })}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all"
-                    placeholder="e.g. 20.5937"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Longitude</label>
-                  <input
-                    type="number"
-                    step="any"
-                    value={newAlert.longitude}
-                    onChange={(e) => setNewAlert({ ...newAlert, longitude: e.target.value })}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all"
-                    placeholder="e.g. 78.9629"
-                  />
-                </div>
-              </div>
-
-              <div className="flex items-center">
-                <input
-                  id="is_resolved"
-                  type="checkbox"
-                  checked={newAlert.is_resolved}
-                  onChange={(e) => setNewAlert({ ...newAlert, is_resolved: e.target.checked })}
-                  className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                />
-                <label htmlFor="is_resolved" className="ml-2 block text-sm text-gray-900">
-                  Is resolved
-                </label>
-              </div>
-
-              <div className="pt-4 flex gap-3 justify-end">
-                <button
-                  type="button"
-                  onClick={() => setShowModal(false)}
-                  className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors font-medium"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={createLoading}
-                  className="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors font-medium shadow-md flex items-center"
-                >
-                  {createLoading ? 'Saving...' : 'Save Alert'}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
     </>
   );
 }

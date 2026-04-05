@@ -63,20 +63,6 @@ export default function Vehicles() {
         setCurrentPage(1);
     }, [searchQuery]);
 
-    const openCreateModal = () => {
-        setCurrentVehicle(null);
-        setFormData({
-            user: users.length > 0 ? users[0].id : "",
-            make: "",
-            model: "",
-            year: new Date().getFullYear(),
-            license_plate: "",
-            vin: ""
-        });
-        setModalError("");
-        setIsModalOpen(true);
-    };
-
     const openEditModal = (vehicle) => {
         setCurrentVehicle(vehicle);
 
@@ -109,8 +95,6 @@ export default function Vehicles() {
         try {
             if (currentVehicle) {
                 await api.patch(`/admin/vehicles/${currentVehicle.id}/`, formData);
-            } else {
-                await api.post("/admin/vehicles/", formData);
             }
             setIsModalOpen(false);
             fetchData();
@@ -127,12 +111,6 @@ export default function Vehicles() {
         <>
             <div className="flex justify-between items-center mb-6">
                 <h2 className="text-2xl font-bold text-gray-800">Vehicles Management 🚗</h2>
-                <button
-                    onClick={openCreateModal}
-                    className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition shadow-sm flex items-center gap-2"
-                >
-                    <span>+</span> Register Vehicle
-                </button>
             </div>
 
             {}
@@ -268,7 +246,7 @@ export default function Vehicles() {
             {isModalOpen && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                     <div className="bg-white p-6 rounded-lg shadow-xl w-96 max-h-[90vh] overflow-y-auto">
-                        <h3 className="text-xl font-bold mb-4">{currentVehicle ? 'Edit Vehicle' : 'Register Vehicle'}</h3>
+                        <h3 className="text-xl font-bold mb-4">Edit Vehicle</h3>
 
                         {modalError && (
                             <div className="bg-red-100 text-red-700 p-2 mb-4 rounded text-sm">

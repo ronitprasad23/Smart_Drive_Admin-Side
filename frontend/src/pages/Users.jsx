@@ -70,21 +70,6 @@ export default function Users() {
     setCurrentPage(1);
   }, [searchQuery]);
 
-  const openCreateModal = () => {
-    setCurrentUser(null);
-    setFormData({
-      username: "",
-      email: "",
-      first_name: "",
-      last_name: "",
-      password: "",
-      is_staff: false,
-      is_active: true
-    });
-    setModalError("");
-    setIsModalOpen(true);
-  };
-
   const openEditModal = (user) => {
     setCurrentUser(user);
     setFormData({
@@ -117,14 +102,9 @@ export default function Users() {
 
     try {
       if (currentUser) {
-
         const payload = { ...formData };
         if (!payload.password) delete payload.password;
-
         await api.patch(`/admin/users/${currentUser.id}/`, payload);
-      } else {
-
-        await api.post('/admin/users/', formData);
       }
       setIsModalOpen(false);
       fetchUsers();
@@ -138,12 +118,6 @@ export default function Users() {
     <>
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-bold text-gray-800">Users Management 👥</h2>
-        <button
-          onClick={openCreateModal}
-          className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition shadow-sm flex items-center gap-2"
-        >
-          <span>+</span> Add New User
-        </button>
       </div>
 
       {}
@@ -291,7 +265,7 @@ export default function Users() {
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-lg shadow-xl w-96 max-h-[90vh] overflow-y-auto">
-            <h3 className="text-xl font-bold mb-4">{currentUser ? 'Edit User' : 'Create User'}</h3>
+            <h3 className="text-xl font-bold mb-4">Edit User</h3>
 
             {modalError && (
               <div className="bg-red-100 text-red-700 p-2 mb-4 rounded text-sm">
