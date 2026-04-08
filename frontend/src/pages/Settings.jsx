@@ -10,6 +10,7 @@ export default function Settings() {
 
   const [appName, setAppName] = useState("");
   const [emailAlerts, setEmailAlerts] = useState(true);
+  const [smsAlerts, setSmsAlerts] = useState(false);
 
   useEffect(() => {
     fetchSettings();
@@ -29,6 +30,7 @@ export default function Settings() {
 
       if (settingsMap['app_name']) setAppName(settingsMap['app_name'].value);
       if (settingsMap['email_alerts']) setEmailAlerts(settingsMap['email_alerts'].value === 'true');
+      if (settingsMap['sms_alerts']) setSmsAlerts(settingsMap['sms_alerts'].value === 'true');
 
     } catch (error) {
       console.error("Failed to fetch settings", error);
@@ -52,6 +54,18 @@ export default function Settings() {
     }
   };
 
+  const handleToggleEmail = () => {
+    const newValue = !emailAlerts;
+    setEmailAlerts(newValue);
+    saveSetting('email_alerts', newValue);
+  };
+
+  const handleToggleSms = () => {
+    const newValue = !smsAlerts;
+    setSmsAlerts(newValue);
+    saveSetting('sms_alerts', newValue);
+  };
+
   if (loading) return <div>Loading settings...</div>;
 
   return (
@@ -60,7 +74,7 @@ export default function Settings() {
 
       <div className="settings-wrapper">
 
-        {}
+        {/* Application Settings */}
         <div className="settings-card">
           <h3>Application Settings</h3>
 
@@ -76,12 +90,12 @@ export default function Settings() {
           <input type="email" defaultValue={user?.email || ""} readOnly className="bg-gray-100 cursor-not-allowed" />
         </div>
 
-        {}
+        {/* Notification Settings */}
         <div className="settings-card">
           <h3>Notification Settings</h3>
           <div className="space-y-4 mt-4">
 
-            {}
+            {/* Email Alerts Toggle */}
             <div className="flex items-center justify-between p-3 border border-gray-100 rounded-xl hover:bg-gray-50 transition-all">
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-indigo-50 text-indigo-600 rounded-lg">
@@ -94,34 +108,36 @@ export default function Settings() {
               </div>
 
               <button
-                onClick={() => setEmailAlerts(!emailAlerts)}
+                onClick={handleToggleEmail}
                 className={`w-12 h-6 flex items-center rounded-full p-1 transition-colors duration-300 focus:outline-none ${emailAlerts ? 'bg-indigo-600' : 'bg-gray-300'}`}
               >
                 <div className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform duration-300 ${emailAlerts ? 'translate-x-6' : 'translate-x-0'}`} />
               </button>
             </div>
 
-            {}
-            <div className="flex items-center justify-between p-3 border border-gray-100 rounded-xl bg-gray-50 opacity-75 cursor-not-allowed">
+            {/* SMS Alerts Toggle */}
+            <div className="flex items-center justify-between p-3 border border-gray-100 rounded-xl hover:bg-gray-50 transition-all">
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-gray-200 text-gray-500 rounded-lg">
+                <div className="p-2 bg-green-50 text-green-600 rounded-lg">
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" /></svg>
                 </div>
                 <div>
-                  <h4 className="font-medium text-gray-600 flex items-center gap-2">
+                  <h4 className="font-medium text-gray-800 flex items-center gap-2">
                     SMS Alerts
-                    <span className="text-[10px] bg-gray-200 text-gray-600 px-2 py-0.5 rounded-full uppercase tracking-wide font-bold">Soon</span>
                   </h4>
-                  <p className="text-xs text-gray-400">Receive text messages on your phone</p>
+                  <p className="text-xs text-gray-500">Receive text messages on your phone</p>
                 </div>
               </div>
 
-              <div className="w-12 h-6 bg-gray-200 rounded-full p-1 flex items-center">
-                <div className="bg-white w-4 h-4 rounded-full shadow-sm" />
-              </div>
+              <button
+                onClick={handleToggleSms}
+                className={`w-12 h-6 flex items-center rounded-full p-1 transition-colors duration-300 focus:outline-none ${smsAlerts ? 'bg-green-600' : 'bg-gray-300'}`}
+              >
+                <div className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform duration-300 ${smsAlerts ? 'translate-x-6' : 'translate-x-0'}`} />
+              </button>
             </div>
 
-            {}
+            {/* Push Notifications Toggle */}
             <div className="flex items-center justify-between p-3 border border-gray-100 rounded-xl bg-gray-50 opacity-75 cursor-not-allowed">
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-gray-200 text-gray-500 rounded-lg">
@@ -144,7 +160,7 @@ export default function Settings() {
           </div>
         </div>
 
-        {}
+        {/* Security */}
         <div className="settings-card">
           <h3>Security</h3>
           <p>To change your password, verify your identity on the dedicated page.</p>
