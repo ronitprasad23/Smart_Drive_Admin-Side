@@ -7,7 +7,7 @@ class TripViewSet(mixins.CreateModelMixin, mixins.UpdateModelMixin, mixins.Destr
     permission_classes = (permissions.IsAuthenticated,)
 
     def get_queryset(self):
-        return Trip.objects.filter(user=self.request.user)
+        return Trip.objects.filter(user=self.request.user).order_by('-trip_id')
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)

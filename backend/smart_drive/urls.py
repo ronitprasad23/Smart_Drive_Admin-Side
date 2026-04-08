@@ -33,6 +33,7 @@ urlpatterns = [
     path('api/admin/vehicles/', AdminVehicleViewSet.as_view({'get': 'list'}), name='admin-vehicles-list'),
     path('api/admin/vehicles/<int:pk>/', AdminVehicleViewSet.as_view({'get': 'retrieve', 'put': 'update', 'patch': 'partial_update', 'delete': 'destroy'}), name='admin-vehicles-detail'),
 
+    path('api/user/emergency-contacts/send-alert/', SendEmergencyAlertView.as_view(), name='send-emergency-alert'),
     path('api/user/emergency-contacts/', EmergencyContactViewSet.as_view({'get': 'list', 'post': 'create'}), name='user-contacts-list'),
     path('api/user/emergency-contacts/<int:pk>/', EmergencyContactViewSet.as_view({'get': 'retrieve', 'put': 'update', 'delete': 'destroy'}), name='user-contacts-detail'),
 

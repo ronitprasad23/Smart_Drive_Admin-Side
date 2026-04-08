@@ -13,6 +13,8 @@ class TripSerializer(serializers.ModelSerializer):
         allow_null=True
     )
     start_time = serializers.DateTimeField(required=False, allow_null=True)
+    alerts_count = serializers.SerializerMethodField()
+
 
     class Meta:
         model = Trip
@@ -30,3 +32,6 @@ class TripSerializer(serializers.ModelSerializer):
             return str(obj.user)
         except:
             return "Unknown User"
+
+    def get_alerts_count(self, obj):
+        return obj.trip_alerts.count()

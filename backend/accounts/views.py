@@ -142,3 +142,141 @@ class ChangePasswordView(APIView):
         user.set_password(new_password)
         user.save()
         return Response({"message": "Password updated successfully"}, status=status.HTTP_200_OK)
+
+class SendEmergencyAlertView(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def post(self, request):
+        user = request.user
+        contacts = EmergencyContact.objects.filter(user=user)
+        
+        # Comprehensive report data
+        dispatch_report = {
+            "summary": {
+                "total_contacts": contacts.count(),
+                "emails_successful": 0,
+                "missing_emails": 0,
+                "real_sms_sent": 0,
+                "simulated_sms": 0,
+                "total_errors": 0
+            },
+            "contact_details": []
+        }
+
+        alert_type = request.data.get('alert_type', 'URGENT SOS')
+        location = request.data.get('location', 'Unknown location')
+        
+        subject = f"CRITICAL SOS ALERT: {user.get_full_name() or user.username} is Unresponsive!"
+        
+        message = f"""
+EMERGENCY ALERT (Smart Drive)
+
+A critical safety event has been triggered.
+Driver: {user.get_full_name() or user.username}
+Reason: {alert_type}
+Location: {location}
+
+Please contact the driver immediately.
+"""
+        from django.core.mail import send_mail
+        from django.conf import settings
+        import os
+
+        # Twilio Config
+        sid = os.environ.get('TWILIO_ACCOUNT_SID')
+        token = os.environ.get('TWILIO_AUTH_TOKEN')
+        t_num = os.environ.get('TWILIO_PHONE_NUMBER')
+        
+        sms_client = None
+        if sid and token:
+            try:
+                from twilio.rest import Client
+                sms_client = Client(sid, token)
+            except Exception as e:
+                print(f"[SOS DIAG] Twilio Init Error: {e}")
+
+        # Dispatch Loop
+        for contact in contacts:
+            c_report = {
+                "name": contact.name,
+                "email_status": "N/A",
+                "sms_status": "N/A",
+                "errors": []
+            }
+            
+            # --- Email Dispatch ---
+            c_email = getattr(contact, 'email', None)
+            
+            if c_email and c_email.strip():
+                try:
+                    send_mail(
+                        subject,
+                        message,
+                        settings.DEFAULT_FROM_EMAIL,
+                        [c_email],
+                        fail_silently=False,
+                    )
+                    c_report["email_status"] = "SENT"
+                    dispatch_report["summary"]["emails_successful"] += 1
+                except Exception as e:
+                    c_report["email_status"] = "FAILED"
+                    c_report["errors"].append(f"Email Error: {str(e)}")
+                    dispatch_report["summary"]["total_errors"] += 1
+            else:
+                c_report["email_status"] = "MISSING INFO"
+                c_report["errors"].append("No Email Address saved for this contact.")
+                dispatch_report["summary"]["missing_emails"] += 1
+
+            # --- SMS Dispatch ---
+            if contact.phone_number:
+                if sid and token:
+                    try:
+                        from twilio.rest import Client
+                        client = Client(sid, token)
+                        
+                        # Validate Twilio From Number format
+                        from_num = t_num
+                        if from_num and not str(from_num).startswith('+'):
+                            from_num = f"+{from_num}"
+
+                        client.messages.create(
+                            body=message,
+                            from_=from_num,
+                            to=contact.phone_number
+                        )
+                        c_report["sms_status"] = "SENT"
+                        dispatch_report["summary"]["real_sms_sent"] += 1
+                    except ImportError:
+                        c_report["sms_status"] = "FAILED"
+                        c_report["errors"].append("Twilio library not installed. Run 'pip install twilio'.")
+                        dispatch_report["summary"]["total_errors"] += 1
+                    except Exception as e:
+                        import re
+                        raw_error = str(e)
+                        # Strip ANSI escape codes (e.g. [31m)
+                        clean_error = re.sub(r'\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])', '', raw_error)
+                        
+                        c_report["sms_status"] = "FAILED"
+                        c_report["errors"].append(f"SMS Provider Error: {clean_error}")
+                        dispatch_report["summary"]["total_errors"] += 1
+                else:
+                    # Simulation / Key missing
+                    c_report["sms_status"] = "SIMULATED (No Twilio Keys)"
+                    dispatch_report["summary"]["simulated_sms"] += 1
+            else:
+                c_report["sms_status"] = "MISSING INFO"
+                c_report["errors"].append("No Phone Number saved for this contact.")
+
+            dispatch_report["contact_details"].append(c_report)
+
+        # Final validation for return
+        if not contacts.exists():
+            return Response({
+                "detail": "No emergency contacts found. Please add contacts in the App first.",
+                "report": dispatch_report
+            }, status=status.HTTP_404_NOT_FOUND)
+
+        return Response({
+            "detail": "SOS Dispatch Processed.",
+            "report": dispatch_report
+        }, status=status.HTTP_200_OK)

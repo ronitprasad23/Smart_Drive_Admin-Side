@@ -6,3 +6,5 @@ django-cors-headers
 google-genai
 python-dotenv
 drf-spectacular
+twilio
+
