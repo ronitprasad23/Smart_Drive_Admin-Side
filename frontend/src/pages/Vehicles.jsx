@@ -110,7 +110,7 @@ export default function Vehicles() {
     return (
         <>
             <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold text-gray-800">Vehicles Management 🚗</h2>
+                <h2 className="text-2xl font-bold text-white-800">Vehicles Management 🚗</h2>
             </div>
 
             {}
