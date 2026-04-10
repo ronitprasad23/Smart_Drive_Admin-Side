@@ -1,7 +1,7 @@
 export default function AccidentZones() {
   return (
     <>
-      <h2 className="text-2xl font-bold text-gray-800 mb-6">Accident Zones 🚧</h2>
+      <h2 className="text-2xl font-bold text-white-800 mb-6">Accident Zones 🚧</h2>
 
       { }
       <div className="stats-grid">

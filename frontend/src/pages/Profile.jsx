@@ -47,14 +47,14 @@ export default function Profile() {
         }
         .detail-group label {
           font-weight: 500;
-          color: #666;
+          color: #dad2d2;
           font-size: 0.9rem;
           display: block;
           margin-bottom: 0.25rem;
         }
         .detail-value {
           font-size: 1.1rem;
-          color: #333;
+          color: #8e8a8a;
           font-weight: 600;
         }
         .status-badge {

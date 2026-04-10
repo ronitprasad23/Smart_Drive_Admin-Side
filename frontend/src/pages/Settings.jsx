@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useState, useEffect } from "react";
 import api from "../services/api";
+import { FiSettings, FiBell, FiShield, FiMail, FiMessageSquare, FiSmartphone, FiChevronRight } from "react-icons/fi";
 
 export default function Settings() {
   const { user } = useAuth();
@@ -66,110 +67,152 @@ export default function Settings() {
     saveSetting('sms_alerts', newValue);
   };
 
-  if (loading) return <div>Loading settings...</div>;
+  if (loading) return (
+    <div className="flex items-center justify-center min-h-[60vh]">
+      <div className="w-12 h-12 border-4 border-emerald-500/20 border-t-emerald-500 rounded-full animate-spin"></div>
+    </div>
+  );
 
   return (
-    <>
-      <h2 className="text-2xl font-bold text-gray-800 mb-6">Settings ⚙️</h2>
+    <div className="animate-fade-in max-w-6xl">
+      <div className="flex items-center gap-4 mb-10">
+        <div className="w-12 h-12 bg-emerald-500/10 rounded-2xl flex items-center justify-center text-emerald-400 border border-emerald-500/20 shadow-lg shadow-emerald-500/5">
+          <FiSettings size={24} />
+        </div>
+        <div>
+          <h2 className="text-3xl font-bold text-white tracking-tight">System Settings</h2>
+          <p className="text-slate-500 text-sm font-medium">Configure global application behavior and notifications</p>
+        </div>
+      </div>
 
-      <div className="settings-wrapper">
+      <div className="grid lg:grid-cols-2 gap-8">
 
         {/* Application Settings */}
-        <div className="settings-card">
-          <h3>Application Settings</h3>
+        <div className="glass-card p-8 border-white/5 space-y-8">
+          <div className="flex items-center gap-3 mb-2">
+            <FiSettings className="text-emerald-400" />
+            <h3 className="text-xl font-bold text-white">Application</h3>
+          </div>
 
-          <label>App Name</label>
-          <input
-            type="text"
-            value={appName}
-            readOnly
-            className="bg-gray-100 cursor-not-allowed"
-          />
+          <div className="space-y-6">
+            <div className="space-y-2">
+              <label className="text-sm font-semibold text-slate-400 uppercase tracking-wider">App Name</label>
+              <div className="relative group">
+                <input
+                  type="text"
+                  value={appName}
+                  readOnly
+                  className="w-full bg-white/5 border border-white/10 rounded-xl py-4 px-4 text-white placeholder-slate-500 focus:outline-none opacity-60 cursor-not-allowed"
+                />
+              </div>
+            </div>
 
-          <label>Admin Email</label>
-          <input type="email" defaultValue={user?.email || ""} readOnly className="bg-gray-100 cursor-not-allowed" />
+            <div className="space-y-2">
+              <label className="text-sm font-semibold text-slate-400 uppercase tracking-wider">Admin Email</label>
+              <div className="relative group">
+                <input
+                  type="email"
+                  defaultValue={user?.email || ""}
+                  readOnly
+                  className="w-full bg-white/5 border border-white/10 rounded-xl py-4 px-4 text-white placeholder-slate-500 focus:outline-none opacity-60 cursor-not-allowed"
+                />
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Notification Settings */}
-        <div className="settings-card">
-          <h3>Notification Settings</h3>
-          <div className="space-y-4 mt-4">
+        <div className="glass-card p-8 border-white/5">
+          <div className="flex items-center gap-3 mb-8">
+            <FiBell className="text-emerald-400" />
+            <h3 className="text-xl font-bold text-white">Notifications</h3>
+          </div>
 
+          <div className="space-y-4">
             {/* Email Alerts Toggle */}
-            <div className="flex items-center justify-between p-3 border border-gray-100 rounded-xl hover:bg-gray-50 transition-all">
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-indigo-50 text-indigo-600 rounded-lg">
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+            <div className="flex items-center justify-between p-5 bg-white/5 border border-white/5 rounded-2xl hover:bg-white/10 transition-all hover:scale-[1.01] group">
+              <div className="flex items-center gap-4">
+                <div className="p-3 bg-emerald-500/10 text-emerald-400 rounded-xl group-hover:bg-emerald-500 group-hover:text-white transition-all duration-300">
+                  <FiMail size={20} />
                 </div>
                 <div>
-                  <h4 className="font-medium text-gray-800">Email Alerts</h4>
-                  <p className="text-xs text-gray-500">Get notified via email for critical events</p>
+                  <h4 className="font-bold text-white">Email Alerts</h4>
+                  <p className="text-xs text-slate-500">Critical events via email</p>
                 </div>
               </div>
 
               <button
                 onClick={handleToggleEmail}
-                className={`w-12 h-6 flex items-center rounded-full p-1 transition-colors duration-300 focus:outline-none ${emailAlerts ? 'bg-indigo-600' : 'bg-gray-300'}`}
+                className={`w-14 h-7 flex items-center rounded-full p-1 transition-all duration-500 focus:outline-none ring-offset-dark-900 ring-emerald-500/20 ${emailAlerts ? 'bg-emerald-500 ring-4' : 'bg-slate-700'}`}
               >
-                <div className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform duration-300 ${emailAlerts ? 'translate-x-6' : 'translate-x-0'}`} />
+                <div className={`bg-white w-5 h-5 rounded-full shadow-lg transform transition-all duration-500 ease-in-out ${emailAlerts ? 'translate-x-7' : 'translate-x-0'}`} />
               </button>
             </div>
 
             {/* SMS Alerts Toggle */}
-            <div className="flex items-center justify-between p-3 border border-gray-100 rounded-xl hover:bg-gray-50 transition-all">
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-green-50 text-green-600 rounded-lg">
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" /></svg>
+            <div className="flex items-center justify-between p-5 bg-white/5 border border-white/5 rounded-2xl hover:bg-white/10 transition-all hover:scale-[1.01] group">
+              <div className="flex items-center gap-4">
+                <div className="p-3 bg-cyan-500/10 text-cyan-400 rounded-xl group-hover:bg-cyan-500 group-hover:text-white transition-all duration-300">
+                  <FiMessageSquare size={20} />
                 </div>
                 <div>
-                  <h4 className="font-medium text-gray-800 flex items-center gap-2">
-                    SMS Alerts
-                  </h4>
-                  <p className="text-xs text-gray-500">Receive text messages on your phone</p>
+                  <h4 className="font-bold text-white">SMS Alerts</h4>
+                  <p className="text-xs text-slate-500">Real-time mobile updates</p>
                 </div>
               </div>
 
               <button
                 onClick={handleToggleSms}
-                className={`w-12 h-6 flex items-center rounded-full p-1 transition-colors duration-300 focus:outline-none ${smsAlerts ? 'bg-green-600' : 'bg-gray-300'}`}
+                className={`w-14 h-7 flex items-center rounded-full p-1 transition-all duration-500 focus:outline-none ring-offset-dark-900 ring-cyan-500/20 ${smsAlerts ? 'bg-cyan-500 ring-4' : 'bg-slate-700'}`}
               >
-                <div className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform duration-300 ${smsAlerts ? 'translate-x-6' : 'translate-x-0'}`} />
+                <div className={`bg-white w-5 h-5 rounded-full shadow-lg transform transition-all duration-500 ease-in-out ${smsAlerts ? 'translate-x-7' : 'translate-x-0'}`} />
               </button>
             </div>
 
             {/* Push Notifications Toggle */}
-            <div className="flex items-center justify-between p-3 border border-gray-100 rounded-xl bg-gray-50 opacity-75 cursor-not-allowed">
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-gray-200 text-gray-500 rounded-lg">
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" /></svg>
+            <div className="flex items-center justify-between p-5 bg-dark-950/40 border border-white/5 rounded-2xl opacity-60 grayscale cursor-not-allowed">
+              <div className="flex items-center gap-4">
+                <div className="p-3 bg-slate-800 text-slate-500 rounded-xl">
+                  <FiSmartphone size={20} />
                 </div>
                 <div>
-                  <h4 className="font-medium text-gray-600 flex items-center gap-2">
-                    Push Notifications
-                    <span className="text-[10px] bg-gray-200 text-gray-600 px-2 py-0.5 rounded-full uppercase tracking-wide font-bold">Soon</span>
+                  <h4 className="font-bold text-slate-400 flex items-center gap-2">
+                    Push Alerts
+                    <span className="text-[10px] bg-slate-800 text-slate-500 px-2 py-0.5 rounded-full uppercase tracking-tighter border border-white/5">Upcoming</span>
                   </h4>
-                  <p className="text-xs text-gray-400">Browser and mobile push alerts</p>
+                  <p className="text-xs text-slate-600">Browser push messages</p>
                 </div>
               </div>
 
-              <div className="w-12 h-6 bg-gray-200 rounded-full p-1 flex items-center">
-                <div className="bg-white w-4 h-4 rounded-full shadow-sm" />
+              <div className="w-14 h-7 bg-slate-800 rounded-full p-1 flex items-center">
+                <div className="bg-slate-900 w-5 h-5 rounded-full shadow-inner" />
               </div>
             </div>
-
           </div>
         </div>
 
-        {/* Security */}
-        <div className="settings-card">
-          <h3>Security</h3>
-          <p>To change your password, verify your identity on the dedicated page.</p>
-          <Link to="/dashboard/change-password">
-            <button className="save-btn danger" style={{ marginTop: '1rem' }}>Go to Change Password</button>
-          </Link>
+        {/* Security Section */}
+        <div className="glass-card p-8 border-white/5 lg:col-span-2">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div className="flex items-center gap-4">
+              <div className="p-4 bg-red-500/10 text-red-400 rounded-2xl border border-red-500/20">
+                <FiShield size={28} />
+              </div>
+              <div>
+                <h3 className="text-xl font-bold text-white">Security & Access</h3>
+                <p className="text-slate-500 text-sm">Manage your credentials and account safety</p>
+              </div>
+            </div>
+
+            <Link to="/dashboard/change-password" title="Go to Change Password">
+              <button className="btn-primary w-full md:w-auto bg-gradient-to-r from-red-500 to-rose-600 shadow-red-500/20 flex items-center justify-center gap-2 group">
+                Change Password <FiChevronRight className="group-hover:translate-x-1 transition-transform" />
+              </button>
+            </Link>
+          </div>
         </div>
 
       </div>
-    </>
+    </div>
   );
-}
+};

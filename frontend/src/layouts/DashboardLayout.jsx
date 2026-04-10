@@ -4,7 +4,7 @@ import "../dashboard.css";
 
 export default function DashboardLayout({ children }) {
   return (
-    <div className="flex bg-gray-50 min-h-screen">
+    <div className="flex bg-dark-900 min-h-screen text-slate-300">
       <Sidebar />
 
       <div className="flex-1 flex flex-col">
