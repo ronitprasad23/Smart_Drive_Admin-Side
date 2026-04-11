@@ -9,7 +9,7 @@ from vehicles.views import VehicleViewSet, AdminVehicleViewSet
 from trips.views import TripViewSet, AdminTripViewSet
 from alerts.views import UserAlertViewSet, AdminAlertViewSet, AdminAlertDefinitionViewSet
 from system_settings.views import SystemSettingViewSet
-from analytics.views import OverviewView, AlertsSummaryView, RiskTrendsView, TripFeedbackView
+from analytics.views import OverviewView, AlertsSummaryView, RiskTrendsView, TripFeedbackView, ReportsView, ReportPDFView
 from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
 
 user_router = DefaultRouter()
@@ -63,6 +63,8 @@ urlpatterns = [
     path('api/analytics/alerts-summary/', AlertsSummaryView.as_view(), name='analytics-alerts-summary'),
     path('api/analytics/risk-trends/', RiskTrendsView.as_view(), name='analytics-risk-trends'),
     path('api/analytics/trip-feedback/<int:trip_id>/', TripFeedbackView.as_view(), name='analytics-trip-feedback'),
+    path('api/analytics/reports/', ReportsView.as_view(), name='analytics-reports'),
+    path('api/analytics/reports/pdf/', ReportPDFView.as_view(), name='analytics-reports-pdf'),
 
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
     path('api/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),

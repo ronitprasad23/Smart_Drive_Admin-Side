@@ -9,7 +9,7 @@ def generate_safety_feedback(trip_instance, alerts_queryset):
 
     distance = trip_instance.distance_km
 
-    high_severity_count = alerts_queryset.filter(severity__in=['HIGH', 'CRITICAL']).count()
+    high_severity_count = alerts_queryset.filter(severity__in=['MODERATE_RISK', 'CRITICAL_RISK']).count()
     drowsiness_count = alerts_queryset.filter(alert_type__name__icontains='Drowsiness').count()
     speeding_count = alerts_queryset.filter(alert_type__name__icontains='Speeding').count()
 
