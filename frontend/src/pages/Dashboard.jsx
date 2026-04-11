@@ -12,6 +12,7 @@ import AboutApp from "./AboutApp";
 import Settings from "./Settings";
 import ChangePassword from "./ChangePassword";
 import Profile from "./Profile";
+import Reports from "./Reports";
 
 import { useEffect, useState } from "react";
 import api from "../services/api";
@@ -125,6 +126,7 @@ export default function Dashboard() {
         <Route path="settings" element={<Settings />} />
         <Route path="change-password" element={<ChangePassword />} />
         <Route path="profile" element={<Profile />} />
+        <Route path="reports" element={<Reports />} />
       </Routes>
     </DashboardLayout>
   );

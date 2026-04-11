@@ -38,7 +38,7 @@ export default function AlertMap() {
     return (
         <div className="flex flex-col h-full">
             <div className="flex justify-between items-center mb-6 shrink-0">
-                <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
+                <h2 className="text-2xl font-bold text-white-800 flex items-center gap-2">
                     <span onClick={() => navigate(-1)} className="cursor-pointer hover:text-gray-600 transition-colors">
                         ←
                     </span>

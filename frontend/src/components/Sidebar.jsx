@@ -1,5 +1,5 @@
 import { NavLink } from "react-router-dom";
-import { FiCpu, FiChevronRight, FiGrid, FiAlertCircle, FiNavigation, FiUsers, FiTruck, FiMapPin, FiLayers, FiSettings, FiUser } from "react-icons/fi";
+import { FiCpu, FiChevronRight, FiGrid, FiAlertCircle, FiNavigation, FiUsers, FiTruck, FiMapPin, FiLayers, FiSettings, FiUser, FiBarChart2 } from "react-icons/fi";
 
 export default function Sidebar() {
   const navItems = [
@@ -23,6 +23,9 @@ export default function Sidebar() {
     },
     {
       name: "Features", path: "/dashboard/features", icon: <FiLayers size={20} />
+    },
+    {
+      name: "Reports", path: "/dashboard/reports", icon: <FiBarChart2 size={20} />
     },
     {
       name: "Settings", path: "/dashboard/settings", icon: <FiSettings size={20} />
