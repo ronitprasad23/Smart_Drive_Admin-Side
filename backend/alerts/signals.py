@@ -70,6 +70,76 @@ def send_alert_notifications(sender, instance, created, **kwargs):
             - Smart Drive Alert System
             """
 
+            html_message = f"""
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="utf-8">
+            </head>
+            <body style="margin: 0; padding: 0; font-family: Arial, sans-serif; background-color: #f3f4f6;">
+                <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#f3f4f6; padding: 20px;">
+                    <tr>
+                        <td align="center">
+                            <table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                                <tr>
+                                    <td style="background-color: #3b82f6; padding: 30px 20px; text-align: center;">
+                                        <h1 style="color: #ffffff; margin: 0; font-size: 28px; letter-spacing: 1px;">🚨 Security & Safety Alert</h1>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 40px 30px;">
+                                        <p style="font-size: 18px; margin-bottom: 20px; line-height: 1.6; color: #1f2937;">
+                                            <strong>Attention Admin,</strong>
+                                        </p>
+                                        <p style="font-size: 16px; margin-bottom: 25px; line-height: 1.6; color: #4b5563;">
+                                            A new <span style="color: #ef4444; font-weight: bold;">{severity_display}</span> has been detected in the system.
+                                        </p>
+                                        <table width="100%" cellpadding="15" cellspacing="0" style="background-color: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0; text-align: left;">
+                                            <tr>
+                                                <td width="30%" style="font-weight: bold; color: #64748b; border-bottom: 1px solid #e2e8f0;">Vehicle:</td>
+                                                <td width="70%" style="font-weight: bold; font-size: 16px; color: #0f172a; border-bottom: 1px solid #e2e8f0;">{vehicle_name}</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="font-weight: bold; color: #64748b; border-bottom: 1px solid #e2e8f0;">User:</td>
+                                                <td style="color: #0f172a; border-bottom: 1px solid #e2e8f0;">{user_name}</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="font-weight: bold; color: #64748b; border-bottom: 1px solid #e2e8f0;">Alert Type:</td>
+                                                <td style="color: #ef4444; font-weight: bold; border-bottom: 1px solid #e2e8f0;">{instance.alert_type}</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="font-weight: bold; color: #64748b; border-bottom: 1px solid #e2e8f0;">Risk Level:</td>
+                                                <td style="color: #ef4444; font-weight: bold; border-bottom: 1px solid #e2e8f0;">{severity_display}</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="font-weight: bold; color: #64748b; border-bottom: 1px solid #e2e8f0;">Location:</td>
+                                                <td style="color: #3b82f6; border-bottom: 1px solid #e2e8f0;">
+                                                    <a href="{location_link if instance.latitude else '#'}" style="color: #3b82f6; text-decoration: underline;">View on Map</a>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="font-weight: bold; color: #64748b;">Time:</td>
+                                                <td style="color: #0f172a;">{instance.timestamp.strftime('%Y-%m-%d %H:%M:%S')}</td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="background-color: #1e293b; padding: 20px; text-align: center;">
+                                        <p style="color: #94a3b8; font-size: 14px; margin: 0;">
+                                            Smart Drive Alert System<br>
+                                            Administrative Notification
+                                        </p>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+            </body>
+            </html>
+            """
+
             from_email = getattr(settings, 'EMAIL_HOST_USER', 'noreply@smartdrive.com')
             admin_email = getattr(settings, 'ADMIN_EMAIL', 'admin@smartdrive.com')
             
@@ -79,6 +149,7 @@ def send_alert_notifications(sender, instance, created, **kwargs):
                 from_email,
                 [admin_email],
                 fail_silently=False,
+                html_message=html_message,
             )
             print(f"📧 Email Alert Sent to {admin_email}")
         except Exception as e:

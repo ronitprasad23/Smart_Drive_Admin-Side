@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import Trip
+from alerts.serializers import AlertSerializer
 
 class TripSerializer(serializers.ModelSerializer):
     username = serializers.SerializerMethodField()
@@ -14,7 +15,7 @@ class TripSerializer(serializers.ModelSerializer):
     )
     start_time = serializers.DateTimeField(required=False, allow_null=True)
     alerts_count = serializers.SerializerMethodField()
-
+    alerts = serializers.SerializerMethodField()
 
     class Meta:
         model = Trip
@@ -34,4 +35,8 @@ class TripSerializer(serializers.ModelSerializer):
             return "Unknown User"
 
     def get_alerts_count(self, obj):
-        return obj.trip_alerts.count()
+        return obj.trip_alerts.count()
+
+    def get_alerts(self, obj):
+        # Return serialized alert details
+        return AlertSerializer(obj.trip_alerts.all(), many=True).data

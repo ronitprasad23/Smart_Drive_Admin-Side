@@ -178,6 +178,62 @@ Location: {location}
 
 Please contact the driver immediately.
 """
+
+        html_message = f"""
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="utf-8">
+        </head>
+        <body style="margin: 0; padding: 0; font-family: Arial, sans-serif; background-color: #f3f4f6;">
+            <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#f3f4f6; padding: 20px;">
+                <tr>
+                    <td align="center">
+                        <table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                            <tr>
+                                <td style="background-color: #ef4444; padding: 30px 20px; text-align: center;">
+                                    <h1 style="color: #ffffff; margin: 0; font-size: 28px; letter-spacing: 1px;">🚨 EMERGENCY SOS ALERT 🚨</h1>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 40px 30px;">
+                                    <p style="font-size: 18px; margin-bottom: 20px; line-height: 1.6; color: #1f2937;">
+                                        <strong style="color: #ef4444; font-size: 20px;">CRITICAL SAFETY EVENT TRIGGERED</strong>
+                                    </p>
+                                    <p style="font-size: 16px; margin-bottom: 25px; line-height: 1.6; color: #4b5563;">
+                                        Please review the details below and contact the driver immediately. This is an automated emergency dispatch from the Smart Drive system.
+                                    </p>
+                                    <table width="100%" cellpadding="15" cellspacing="0" style="background-color: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0; text-align: left;">
+                                        <tr>
+                                            <td width="30%" style="font-weight: bold; color: #64748b; border-bottom: 1px solid #e2e8f0;">Driver Name:</td>
+                                            <td width="70%" style="font-weight: bold; font-size: 18px; color: #0f172a; border-bottom: 1px solid #e2e8f0;">{user.get_full_name() or user.username}</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="font-weight: bold; color: #64748b; border-bottom: 1px solid #e2e8f0;">Alert Reason:</td>
+                                            <td style="font-weight: bold; color: #ef4444; border-bottom: 1px solid #e2e8f0;">{alert_type}</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="font-weight: bold; color: #64748b;">Location:</td>
+                                            <td style="color: #0f172a;">{location}</td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="background-color: #1e293b; padding: 20px; text-align: center;">
+                                    <p style="color: #94a3b8; font-size: 14px; margin: 0;">
+                                        Powered by <strong>Smart Drive Safety Engine</strong><br>
+                                        Automated Emergency Dispatcher
+                                    </p>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+        </body>
+        </html>
+        """
         from django.core.mail import send_mail
         from django.conf import settings
         import os
@@ -215,6 +271,7 @@ Please contact the driver immediately.
                         settings.DEFAULT_FROM_EMAIL,
                         [c_email],
                         fail_silently=False,
+                        html_message=html_message,
                     )
                     c_report["email_status"] = "SENT"
                     dispatch_report["summary"]["emails_successful"] += 1

@@ -11,7 +11,16 @@ class AlertSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         alert_name = validated_data.pop('alert_type')['name']
-        alert_obj, _ = Alert.objects.get_or_create(name=alert_name)
+        
+        # Normalize Alert Names for consistency
+        normalization_map = {
+            'Drowsy': 'Drowsiness Detected',
+            'Sleep': 'Drowsiness Detected',
+            'Drowsiness': 'Drowsiness Detected',
+        }
+        normalized_name = normalization_map.get(alert_name, alert_name)
+        
+        alert_obj, _ = Alert.objects.get_or_create(name=normalized_name)
         validated_data['alert_type'] = alert_obj
         return super().create(validated_data)
     
