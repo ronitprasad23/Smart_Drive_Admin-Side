@@ -1,20 +1,4 @@
--- Smart Drive Alert System - Database Schema (PostgreSQL)
--- This file defines the clean table structures and relationships for the Smart Drive backend and frontend.
 
--- ---------------------------------------------------------
--- 1. CLEANUP (Optional)
--- ---------------------------------------------------------
--- DROP TABLE IF EXISTS alerts_tripalert CASCADE;
--- DROP TABLE IF EXISTS alerts_alert CASCADE;
--- DROP TABLE IF EXISTS trips CASCADE;
--- DROP TABLE IF EXISTS vehicles CASCADE;
--- DROP TABLE IF EXISTS accounts_emergencycontact CASCADE;
--- DROP TABLE IF EXISTS admins CASCADE;
--- DROP TABLE IF EXISTS system_settings_systemsetting CASCADE;
-
--- ---------------------------------------------------------
--- 2. USER AUTHENTICATION & PROFILES
--- ---------------------------------------------------------
 
 -- Create the core user table (mapped to accounts.User)
 CREATE TABLE admins (
