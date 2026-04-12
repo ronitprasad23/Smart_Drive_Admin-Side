@@ -136,19 +136,6 @@ export default function Features() {
           ))}
         </div>
       </section>
-
-      {/* Dev Status Footer */}
-      <div className="pt-6 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <div className="p-2 bg-dark-950/50 rounded-lg text-slate-500 border border-white/5">
-            <FiCode size={16} />
-          </div>
-          <p className="text-xs text-slate-500 font-medium italic">Version 2.4.0-Stable • Last Updated: April 2026</p>
-        </div>
-        <button className="text-[10px] font-bold text-emerald-400 uppercase tracking-widest hover:text-emerald-300 transition-colors">
-          View Technical Docs →
-        </button>
-      </div>
     </div>
   );
 }
